@@ -1,34 +1,38 @@
 package com.lfmall.backend.cart.model.mapper;
 
-import com.lfmall.backend.cart.model.dto.CartDto;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.OffsetDateTime;
-
+import com.lfmall.backend.cart.model.dto.CartDto;
 @Mapper
 public interface CartMapper {
 
-    /** cartId로 장바구니 조회 */
-    CartDto selectCartById(@Param("cartId") Long cartId);
+    List<CartDto> selectCartsByMemberId(@Param("memberId") Long memberId);
 
-    /** userId의 ACTIVE 장바구니 조회 (없으면 null) */
-    CartDto selectActiveCartByUserId(@Param("userId") Long userId);
+    Integer selectCartQuantity(@Param("memberId") Long memberId,
+                              @Param("stockId") Long stockId);
 
-    /**
-     * 장바구니 생성
-     * - BIGSERIAL이면 XML에서 INSERT ... RETURNING cart_id 로 cartId 세팅 추천
-     */
-    int insertCart(CartDto cartDto);
+    Long selectCartIdByMemberAndStock(@Param("memberId") Long memberId,
+                                      @Param("stockId") Long stockId);
 
-    /** 장바구니 수정 (status, updatedAt 등) */
-    int updateCart(CartDto cartDto);
+    int insertCart(@Param("memberId") Long memberId,
+                   @Param("stockId") Long stockId,
+                   @Param("quantity") Integer quantity);
 
-    /**
-     * 소프트 삭제(권장): status 변경 + updatedAt 갱신
-     * - 예: status = 'DELETED'
-     */
-    int softDeleteCart(@Param("cartId") Long cartId,
-                       @Param("status") String status,
-                       @Param("updatedAt") OffsetDateTime updatedAt);
+    int updateCartQuantityById(@Param("cartId") Long cartId,
+                               @Param("quantity") Integer quantity);
+
+    int updateCartQuantityByMemberAndStock(@Param("memberId") Long memberId,
+                                           @Param("stockId") Long stockId,
+                                           @Param("quantity") Integer quantity);
+
+    int updateCartStockAndQuantity(@Param("cartId") Long cartId,
+                                   @Param("memberId") Long memberId,
+                                   @Param("newStockId") Long newStockId,
+                                   @Param("quantity") Integer quantity);
+
+    int deleteCartItems(@Param("memberId") Long memberId,
+                        @Param("cartIds") List<Long> cartIds);
 }

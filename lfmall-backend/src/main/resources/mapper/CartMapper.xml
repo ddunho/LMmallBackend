@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lfmall.backend.cart.model.mapper.CartMapper">
+
+  <!-- 장바구니 조회: cart + stock + product + option(2개) 조인 -->
+  <select id="selectCartsByMemberId" resultType="com.lfmall.backend.cart.model.dto.CartDto">
+    SELECT
+        c.cart_id           AS cartId
+      , c.member_id         AS memberId
+      , c.stock_id          AS stockId
+      , c.cart_quantity     AS cartQuantity
+      , c.cart_created_at   AS cartCreatedAt
+
+      , p.product_id        AS productId
+      , p.product_name      AS productName
+      , p.product_price     AS productPrice
+
+      , o1.option_id        AS option1Id
+      , o1.option_type      AS option1Type
+      , o1.option_value     AS option1Value
+
+      , o2.option_id        AS option2Id
+      , o2.option_type      AS option2Type
+      , o2.option_value     AS option2Value
+
+    FROM "cart" c
+    JOIN "stock" s
+      ON c.stock_id = s.stock_id
+    JOIN "product" p
+      ON s.product_id = p.product_id
+    JOIN "option" o1
+      ON s.option1_id = o1.option_id
+    LEFT JOIN "option" o2
+      ON s.option2_id = o2.option_id
+    WHERE c.member_id = #{memberId}
+    ORDER BY c.cart_created_at DESC
+  </select>
+
+
+  <!-- 동일 member + stock 조합이 장바구니에 이미 있는지 -->
+  <select id="selectCartQuantity" resultType="int">
+    SELECT c.cart_quantity
+    FROM "cart" c
+    WHERE c.member_id = #{memberId}
+      AND c.stock_id = #{stockId}
+    LIMIT 1
+  </select>
+
+  <select id="selectCartIdByMemberAndStock" resultType="long">
+    SELECT c.cart_id
+    FROM "cart" c
+    WHERE c.member_id = #{memberId}
+      AND c.stock_id = #{stockId}
+    LIMIT 1
+  </select>
+
+
+  <!-- 장바구니 추가 -->
+  <insert id="insertCart">
+    INSERT INTO "cart" (member_id, stock_id, cart_quantity, cart_created_at)
+    VALUES (#{memberId}, #{stockId}, #{quantity}, NOW())
+  </insert>
+
+
+  <!-- cart_id로 수량 변경 -->
+  <update id="updateCartQuantityById">
+    UPDATE "cart"
+    SET cart_quantity = #{quantity}
+    WHERE cart_id = #{cartId}
+  </update>
+
+
+  <!-- member+stock 기준으로 수량 변경 (중복 담기 시 수량 누적용) -->
+  <update id="updateCartQuantityByMemberAndStock">
+    UPDATE "cart"
+    SET cart_quantity = #{quantity}
+    WHERE member_id = #{memberId}
+      AND stock_id = #{stockId}
+  </update>
+
+
+  <!-- 옵션 변경 = stock_id 변경 + 수량도 같이 갱신, member 소유 검증 -->
+  <update id="updateCartStockAndQuantity">
+    UPDATE "cart"
+    SET stock_id = #{newStockId},
+        cart_quantity = #{quantity}
+    WHERE cart_id = #{cartId}
+      AND member_id = #{memberId}
+  </update>
+
+
+  <!-- 선택 삭제 -->
+  <delete id="deleteCartItems">
+    DELETE FROM "cart"
+    WHERE member_id = #{memberId}
+      AND cart_id IN
+      <foreach collection="cartIds" item="id" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+  </delete>
+
+</mapper>
