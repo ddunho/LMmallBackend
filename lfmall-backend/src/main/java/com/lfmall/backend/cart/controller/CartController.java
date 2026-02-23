@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.lfmall.backend.cart.model.dto.CartDto;
 import com.lfmall.backend.cart.model.service.CartService;
+
+import jakarta.servlet.http.HttpSession;
 
 //import lombok.RequiredArgsConstructor;
 
@@ -28,7 +31,8 @@ public class CartController {
      * body: { member_id }
      */
     @PostMapping("/carts")
-    public ResponseEntity<Object> getCartsByMemberId(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Object> getCartsByMemberId(	@RequestBody Map<String, Object> body
+    													, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long memberId = Long.valueOf(body.get("member_id").toString());
@@ -49,7 +53,8 @@ public class CartController {
      * body: { member_id, stock_id, quantity }
      */
     @PostMapping("/addcart")
-    public ResponseEntity<Object> addCart(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Object> addCart(	@RequestBody Map<String, Object> body
+    										, HttpSession session ) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long memberId = Long.valueOf(body.get("member_id").toString());
@@ -73,7 +78,8 @@ public class CartController {
      * body: { cart_id, quantity }
      */
     @PostMapping("/chquantity")
-    public ResponseEntity<Object> changeQuantity(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Object> changeQuantity(	@RequestBody Map<String, Object> body
+    												, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
@@ -95,7 +101,8 @@ public class CartController {
      * body: { cart_id, member_id, stock_id, quantity }
      */
     @PostMapping("/update-option")
-    public ResponseEntity<Object> updateOption(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Object> updateOption(	@RequestBody Map<String, Object> body
+												, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
@@ -118,7 +125,8 @@ public class CartController {
      * body: { member_id, cart_ids: [..] }
      */
     @PostMapping("/delete")
-    public ResponseEntity<Object> deleteCarts(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Object> deleteCarts(	@RequestBody Map<String, Object> body
+												, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long memberId = Long.valueOf(body.get("member_id").toString());

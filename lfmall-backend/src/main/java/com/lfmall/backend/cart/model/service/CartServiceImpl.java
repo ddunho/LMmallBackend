@@ -12,8 +12,8 @@ import com.lfmall.backend.cart.model.dto.CartDto;
 import com.lfmall.backend.cart.model.mapper.CartMapper;
 @Service
 public class CartServiceImpl implements CartService {
-
-    private final CartMapper cartMapper;
+	@Autowired
+    private CartMapper cartMapper;
 
     @Override
     public List<CartDto> getCartsByMemberId(Long memberId) {
