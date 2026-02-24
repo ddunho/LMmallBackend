@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.lfmall.backend.cart.model.dto.CartDto;
 import com.lfmall.backend.cart.model.service.CartService;
@@ -53,17 +52,26 @@ public class CartController {
      * body: { member_id, stock_id, quantity }
      */
     @PostMapping("/addcart")
-    public ResponseEntity<Object> addCart(	@RequestBody Map<String, Object> body
+    public ResponseEntity<Object> addCart(	@RequestBody List<Map<String, Object>> selectedOption
     										, HttpSession session ) {
         Map<String, Object> response = new HashMap<>();
         try {
+        	/*
             Long memberId = Long.valueOf(body.get("member_id").toString());
             Long stockId = Long.valueOf(body.get("stock_id").toString());
 
             // quantity 없으면 기본 1
-            Integer quantity = body.get("quantity") == null ? 1 : Integer.valueOf(body.get("quantity").toString());
+            Integer quantity = body.get("quantity") == null ? 1 : Integer.valueOf(body.get("quantity").toString());*/
+            for (Map<String, Object> item : selectedOption) {
+                Long memberId = toLong(item.get("member_id"));   
+                Long stockId  = toLong(item.get("stock_id"));    
+                Long optionId  = toLong(item.get("optionId"));    
+                Integer qty    = toInt(item.get("quantity"));     
+                cartService.addCart(memberId, stockId, qty);
 
-            cartService.addCart(memberId, stockId, quantity);
+            }
+
+            
 
             response.put("success", true);
         } catch (Exception e) {
@@ -149,5 +157,20 @@ public class CartController {
             response.put("message", "삭제 실패");
         }
         return ResponseEntity.ok(response);
+    }
+    
+    
+    /*******************************************/
+    
+    private Long toLong(Object v) {
+        if (v == null) return null;
+        if (v instanceof Number n) return n.longValue();
+        return Long.valueOf(v.toString());
+    }
+
+    private Integer toInt(Object v) {
+        if (v == null) return null;
+        if (v instanceof Number n) return n.intValue();
+        return Integer.valueOf(v.toString());
     }
 }

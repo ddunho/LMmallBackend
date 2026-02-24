@@ -7,43 +7,44 @@
 
   <!-- 장바구니 조회: cart + stock + product + option(2개) 조인 -->
   <select id="selectCartsByMemberId" resultType="com.lfmall.backend.cart.model.dto.CartDto">
-    SELECT
-        c.cart_id           AS cartId
-      , c.member_id         AS memberId
-      , c.stock_id          AS stockId
-      , c.cart_quantity     AS cartQuantity
-      , c.cart_created_at   AS cartCreatedAt
+       SELECT	  c.cart_id           AS cartId
+			      , c.member_id         AS memberId
+			      , c.stock_id          AS stockId
+			      , c.cart_quantity     AS cartQuantity
+			      , c.cart_created_at   AS cartCreatedAt
+			
+			      , p.product_id        AS productId
+			      , p.product_name      AS productName
+			      , p.product_price     AS productPrice
+			
+			      , o1.option_id        AS option1Id
+			      , o1.option_type      AS option1Type
+			      , o1.option_value     AS option1Value
+			
+			      , o2.option_id        AS option2Id
+			      , o2.option_type      AS option2Type
+			      , o2.option_value     AS option2Value
 
-      , p.product_id        AS productId
-      , p.product_name      AS productName
-      , p.product_price     AS productPrice
-
-      , o1.option_id        AS option1Id
-      , o1.option_type      AS option1Type
-      , o1.option_value     AS option1Value
-
-      , o2.option_id        AS option2Id
-      , o2.option_type      AS option2Type
-      , o2.option_value     AS option2Value
-
-    FROM "cart" c
-    JOIN "stock" s
-      ON c.stock_id = s.stock_id
-    JOIN "product" p
-      ON s.product_id = p.product_id
-    JOIN "option" o1
-      ON s.option1_id = o1.option_id
-    LEFT JOIN "option" o2
-      ON s.option2_id = o2.option_id
-    WHERE c.member_id = #{memberId}
-    ORDER BY c.cart_created_at DESC
+          FROM 	"cart" c
+          
+          JOIN 	"stock" s
+            ON 	c.stock_id = s.stock_id
+          JOIN 	"product" p
+            ON 	s.product_id = p.product_id
+          JOIN 	"option" o1
+            ON 	s.option1_id = o1.option_id
+     LEFT JOIN 	"option" o2
+            ON 	s.option2_id = o2.option_id
+ 
+         WHERE 	c.member_id = #{memberId}
+      ORDER BY 	c.cart_created_at DESC
   </select>
 
 
   <!-- 동일 member + stock 조합이 장바구니에 이미 있는지 -->
   <select id="selectCartQuantity" resultType="int">
     SELECT c.cart_quantity
-    FROM "cart" c
+    FROM cart c
     WHERE c.member_id = #{memberId}
       AND c.stock_id = #{stockId}
     LIMIT 1

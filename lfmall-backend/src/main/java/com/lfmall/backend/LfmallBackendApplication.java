@@ -5,7 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.lfmall.backend.product.mapper")
+@MapperScan({"com.lfmall.backend.**.mapper"})
+
+//@MapperScan({"com.lfmall.backend.product.mapper"})
 public class LfmallBackendApplication {
 
 	public static void main(String[] args) {

@@ -4,6 +4,7 @@ import java.io.Serializable;
 //import java.net.http.HttpHeaders;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,11 @@ public class TempDevLoginController {
 
     // ✅ 세션에 저장할 최소 로그인 정보(필요한 것만)
     public record LoginMember(Long memberId) implements Serializable {}
+    
+    
+    @Value("${frontend.url}")
+    private String frontendUrl; // react frontend의 URL (대개 localhost:5173)
+    
     /**
      * 	강제 로그인 함수.
      * 
@@ -59,10 +65,12 @@ public class TempDevLoginController {
 
         session.setAttribute("loginMemberId", memberId);
         /*return Map.of("success", true, "loginMemberId", session.getAttribute("loginMemberId"));*/
+        String redirectFrontUrl = frontendUrl + "/app/menu/0";
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, "/app/menu/0")
-                .build(); // 리다이렉트.
+                .header(HttpHeaders.LOCATION, redirectFrontUrl)
+                .build(); //"redirect:" + frontendUrl + "/app/menu/0"
+                
         
     }
 
@@ -73,8 +81,13 @@ public class TempDevLoginController {
     }
 
     @PostMapping("/forceLogout")
-    public Map<String, Object> logout(HttpSession session) {
+    public ResponseEntity<Void> logout(HttpSession session) {
         session.invalidate();
-        return Map.of("success", true);
+        String redirectFrontUrl = frontendUrl + "/app/menu/0";
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectFrontUrl)
+                .build(); //"redirect:" + frontendUrl + "/app/menu/0"
+        //return Map.of("success", true);
     }
 }
