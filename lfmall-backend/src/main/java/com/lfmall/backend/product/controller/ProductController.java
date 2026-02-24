@@ -20,7 +20,8 @@ public class ProductController {
     @PostMapping("/product/list")
     public List<Map<String, Object>> productList(@RequestBody Map<String, Object> body) {
         Integer categoryId = toInt(body.get("category_id"));
-        return service.getProductList(categoryId);
+        String gender = body.get("gender") == null ? null : String.valueOf(body.get("gender"));
+        return service.getProductList(categoryId, gender);
     }
 
     @PostMapping("/product/detail")

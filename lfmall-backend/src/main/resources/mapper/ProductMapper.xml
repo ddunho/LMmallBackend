@@ -16,6 +16,21 @@
 	    p.product_created AS product_created
 	  FROM product_tb p
 	  WHERE (#{categoryId} = 0 OR p.category_id = #{categoryId})
+      <if test="gender != null and gender != ''">
+        AND (
+          <choose>
+            <when test="gender == 'male'">
+              LOWER(TRIM(COALESCE(p.gender, ''))) IN ('m', 'male', 'men', '남성', '남자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
+            </when>
+            <when test="gender == 'female'">
+              LOWER(TRIM(COALESCE(p.gender, ''))) IN ('f', 'female', 'women', '여성', '여자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
+            </when>
+            <otherwise>
+              1 = 1
+            </otherwise>
+          </choose>
+        )
+      </if>
 	  ORDER BY p.product_created DESC, p.product_uid DESC
   </select>
 

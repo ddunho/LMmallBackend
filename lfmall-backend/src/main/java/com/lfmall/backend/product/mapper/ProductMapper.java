@@ -8,7 +8,10 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ProductMapper {
 
-    List<Map<String, Object>> selectProductListByCategory(@Param("categoryId") Integer categoryId);
+    List<Map<String, Object>> selectProductListByCategory(
+        @Param("categoryId") Integer categoryId,
+        @Param("gender") String gender
+    );
 
     Map<String, Object> selectProductBaseById(@Param("productId") Integer productId);
 

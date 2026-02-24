@@ -19,8 +19,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Map<String, Object>> getProductList(Integer categoryId) {
-        List<Map<String, Object>> baseList = mapper.selectProductListByCategory(categoryId);
+    public List<Map<String, Object>> getProductList(Integer categoryId, String gender) {
+        List<Map<String, Object>> baseList = mapper.selectProductListByCategory(categoryId, normalizeGender(gender));
         List<Map<String, Object>> out = new ArrayList<>();
         for (Map<String, Object> base : baseList) {
             out.add(enrichProduct(base));
@@ -106,6 +106,20 @@ public class ProductServiceImpl implements ProductService {
 
     private String asString(Object v) {
         return v == null ? "" : String.valueOf(v);
+    }
+
+    private String normalizeGender(String gender) {
+        if (gender == null) return null;
+        String g = gender.trim().toLowerCase();
+        if (g.isEmpty()) return null;
+
+        if (g.equals("male") || g.equals("m") || g.equals("남성") || g.equals("남자")) {
+            return "male";
+        }
+        if (g.equals("female") || g.equals("f") || g.equals("여성") || g.equals("여자")) {
+            return "female";
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductService {
-    List<Map<String, Object>> getProductList(Integer categoryId);
+    List<Map<String, Object>> getProductList(Integer categoryId, String gender);
     Map<String, Object> getProductDetail(Integer productId);
     List<Map<String, Object>> getProductOptions(Integer productId);
     List<Map<String, Object>> getProductBatch(List<Integer> ids);
