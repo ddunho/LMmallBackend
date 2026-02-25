@@ -1,12 +1,13 @@
 package com.lfmall.backend.cart.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.lfmall.backend.cart.model.dto.CartDto;
 import com.lfmall.backend.cart.model.dto.CartItemDto;
 
 public interface CartService {
-    List<CartDto> getCartsByMemberId(Long memberId);
+	List<Map<String, Object>> getCartsByMemberId(Long memberId);
 
     // addCart는 최소 member_id, stock_id, cart_quantity 필요
     void addCart(Long memberId, Long stockId, Integer quantity);

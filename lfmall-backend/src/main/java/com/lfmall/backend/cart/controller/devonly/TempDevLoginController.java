@@ -1,13 +1,21 @@
 package com.lfmall.backend.cart.controller.devonly;
 
+
+
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 //import java.net.http.HttpHeaders;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpSession;
-
-
 
 
 /**
@@ -38,6 +47,7 @@ import jakarta.servlet.http.HttpSession;
 @Profile({"local", "dev", "!prod"}) // ✅ 운영에서는 절대 활성화 안 되게 ( 경고 : 절대 수정금지 @Profile({"local", "dev", "!prod"}) )
 @RestController // return 되는 값을 문자열 format으로 Http body에 그대로 써버림 
 @RequestMapping("/dev")
+
 public class TempDevLoginController {
 
     // ✅ 세션에 저장할 최소 로그인 정보(필요한 것만)
@@ -46,7 +56,7 @@ public class TempDevLoginController {
     
     @Value("${frontend.url}")
     private String frontendUrl; // react frontend의 URL (대개 localhost:5173)
-    
+    private static final Logger log = LoggerFactory.getLogger(TempDevLoginController.class);
     /**
      * 	강제 로그인 함수.
      * 
@@ -54,7 +64,7 @@ public class TempDevLoginController {
      * */
     @GetMapping("/forceLogin")
     public ResponseEntity<Void> forceLogin(	@RequestParam(value = "memberId", defaultValue = "1") Long memberId,
-            								HttpSession session) {
+            								HttpSession session) throws JsonProcessingException{
     	
     	
         if (!memberId.equals(1L) && !memberId.equals(2L)) {
@@ -63,11 +73,24 @@ public class TempDevLoginController {
                     .build();
         }
 
+
+        
         session.setAttribute("loginMemberId", memberId);
         /*return Map.of("success", true, "loginMemberId", session.getAttribute("loginMemberId"));*/
+        log.debug("FORCELOGIN SUCCESSFUL!! current login memberId : " + memberId);
         String redirectFrontUrl = frontendUrl + "/app/menu/0";
+        
+ 
+        
+        
+        ResponseCookie cookie = ResponseCookie.from("member", String.valueOf(memberId))
+                .httpOnly(false) // false로 지정해야 react측에서 읽을수 있음.
+                .path("/")
+                .maxAge(60 * 60)
+                .build();
         return ResponseEntity
                 .status(HttpStatus.FOUND)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .header(HttpHeaders.LOCATION, redirectFrontUrl)
                 .build(); //"redirect:" + frontendUrl + "/app/menu/0"
                 
@@ -84,6 +107,11 @@ public class TempDevLoginController {
     public ResponseEntity<Void> logout(HttpSession session) {
         session.invalidate();
         String redirectFrontUrl = frontendUrl + "/app/menu/0";
+        ResponseCookie cookie = ResponseCookie.from("member", "")
+                .httpOnly(false) // false로 지정해야 react측에서 읽을수 있음.
+                .path("/")
+                .maxAge(0)
+                .build();
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, redirectFrontUrl)

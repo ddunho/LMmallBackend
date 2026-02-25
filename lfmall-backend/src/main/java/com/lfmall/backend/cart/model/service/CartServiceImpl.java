@@ -1,6 +1,5 @@
 package com.lfmall.backend.cart.model.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lfmall.backend.cart.model.dto.CartDto;
 import com.lfmall.backend.cart.model.mapper.CartMapper;
 @Service
 public class CartServiceImpl implements CartService {
@@ -16,7 +14,7 @@ public class CartServiceImpl implements CartService {
     private CartMapper cartMapper;
 
     @Override
-    public List<CartDto> getCartsByMemberId(Long memberId) {
+    public List<Map<String, Object>> getCartsByMemberId(Long memberId) {
         return cartMapper.selectCartsByMemberId(memberId);
     }
 

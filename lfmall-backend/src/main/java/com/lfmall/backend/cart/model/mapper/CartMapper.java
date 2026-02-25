@@ -1,6 +1,7 @@
 package com.lfmall.backend.cart.model.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +10,7 @@ import com.lfmall.backend.cart.model.dto.CartDto;
 @Mapper
 public interface CartMapper {
 
-    List<CartDto> selectCartsByMemberId(@Param("memberId") Long memberId);
+    List<Map<String, Object>> selectCartsByMemberId(@Param("memberId") Long memberId);
 
     Integer selectCartQuantity(@Param("memberId") Long memberId,
                               @Param("stockId") Long stockId);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,23 +28,38 @@ public class CartController {
     private CartService cartService;
 	 /** @from : CartItems.jsx
      * member_id로 장바구니 목록 조회
-     * body: { member_id }
+     * body: { member_id? }
      */
     @PostMapping("/carts")
-    public ResponseEntity<Object> getCartsByMemberId(	@RequestBody Map<String, Object> body
-    													, HttpSession session) {
+    public ResponseEntity<Object> getCartsByMemberId( HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long memberId = Long.valueOf(body.get("member_id").toString());
-            List<CartDto> cartList = cartService.getCartsByMemberId(memberId);
+        	Long memberId = getLoginMemberId(session);
+
+        	
+            //Long memberId = Long.valueOf(body.get("member_id").toString());
+            List<Map<String, Object>> cartList = cartService.getCartsByMemberId(memberId);
 
             response.put("success", true);
             response.put("data", cartList);
+            
+        } catch (ClassCastException e) { // "loginMemberId" 의 타입이 잘못 저장된 경우
+        	e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "장바구니 조회 실패 : 로그인 세션정보가 올바르지 않습니다.");
+          
+        } catch(IllegalStateException e) {
+        	e.printStackTrace();
+        	response.put("success", false);
+            response.put("message", "장바구니 조회 실패 : 로그인이 필요합니다.");
+            
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "장바구니 조회 실패");
+            
         }
+        
         return ResponseEntity.ok(response);
     }
 
@@ -63,21 +79,31 @@ public class CartController {
             // quantity 없으면 기본 1
             Integer quantity = body.get("quantity") == null ? 1 : Integer.valueOf(body.get("quantity").toString());*/
             for (Map<String, Object> item : selectedOption) {
-                Long memberId = toLong(item.get("member_id"));   
-                Long stockId  = toLong(item.get("stock_id"));    
+            	Long memberId = getLoginMemberId(session);
+            	//Long memberId = toLong(item.get("member_id"));   
+                Long stockId  = toLong(item.get("productId"));    
                 Long optionId  = toLong(item.get("optionId"));    
                 Integer qty    = toInt(item.get("quantity"));     
                 cartService.addCart(memberId, stockId, qty);
 
             }
-
-            
-
             response.put("success", true);
+            
+        } catch (ClassCastException e) { // "loginMemberId" 의 타입이 잘못 저장된 경우
+        	e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "장바구니 담기 실패 : 로그인 세션정보가 올바르지 않습니다.");
+          
+        } catch(IllegalStateException e) {
+        	e.printStackTrace();
+        	response.put("success", false);
+            response.put("message", "장바구니 담기 실패 : 로그인이 필요합니다.");
+            
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "장바구니 담기 실패");
+            
         }
         return ResponseEntity.ok(response);
     }
@@ -96,10 +122,21 @@ public class CartController {
             cartService.changeQuantity(cartId, quantity);
 
             response.put("success", true);
+        } catch (ClassCastException e) { // "loginMemberId" 의 타입이 잘못 저장된 경우
+        	e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "수량 변경 실패 : 로그인 세션정보가 올바르지 않습니다.");
+          
+        } catch(IllegalStateException e) {
+        	e.printStackTrace();
+        	response.put("success", false);
+            response.put("message", "수량 변경 실패 : 로그인이 필요합니다.");
+            
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "수량 변경 실패");
+            
         }
         return ResponseEntity.ok(response);
     }
@@ -121,10 +158,22 @@ public class CartController {
             cartService.updateStock(cartId, newStockId, quantity, memberId);
 
             response.put("success", true);
+            
+        } catch (ClassCastException e) { // "loginMemberId" 의 타입이 잘못 저장된 경우
+        	e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "옵션 변경 실패 : 로그인 세션정보가 올바르지 않습니다.");
+          
+        } catch(IllegalStateException e) {
+        	e.printStackTrace();
+        	response.put("success", false);
+            response.put("message", "옵션 변경 실패 : 로그인이 필요합니다.");
+            
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "옵션 변경 실패");
+            
         }
         return ResponseEntity.ok(response);
     }
@@ -140,7 +189,7 @@ public class CartController {
             Long memberId = Long.valueOf(body.get("member_id").toString());
 
             // JSON 배열을 그대로 List로 받음
-            @SuppressWarnings("unchecked")
+            // type 오류 생길수 있으므로 주의할것.
             List<Object> rawIds = (List<Object>) body.get("cart_ids");
 
             // Object -> Long 변환
@@ -151,10 +200,21 @@ public class CartController {
             cartService.deleteCarts(cartIds, memberId);
 
             response.put("success", true);
+        } catch (ClassCastException e) { // "loginMemberId" 의 타입이 잘못 저장된 경우
+        	e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "삭제 실패 : 로그인 세션정보가 올바르지 않습니다.");
+          
+        } catch(IllegalStateException e) {
+        	e.printStackTrace();
+        	response.put("success", false);
+            response.put("message", "삭제 실패 : 로그인이 필요합니다.");
+            
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "삭제 실패");
+            
         }
         return ResponseEntity.ok(response);
     }
@@ -172,5 +232,21 @@ public class CartController {
         if (v == null) return null;
         if (v instanceof Number n) return n.intValue();
         return Integer.valueOf(v.toString());
+    }
+    
+    //***********************************************/
+    private long getLoginMemberId(HttpSession session) {
+
+        Object attr = session.getAttribute("loginMemberId");
+
+        if (attr == null) {
+            throw new IllegalStateException("로그인이 필요합니다. (세션 없음)");
+        }
+
+        if (!(attr instanceof Long)) {
+            throw new ClassCastException("loginMemberId 타입이 Long이 아닙니다.");
+        }
+
+        return (Long) attr;
     }
 }
