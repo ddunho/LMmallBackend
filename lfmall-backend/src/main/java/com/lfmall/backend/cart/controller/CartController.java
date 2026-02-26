@@ -186,7 +186,7 @@ public class CartController {
 												, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long memberId = Long.valueOf(body.get("member_id").toString());
+            Long memberId = getLoginMemberId(session);
 
             // JSON 배열을 그대로 List로 받음
             // type 오류 생길수 있으므로 주의할것.

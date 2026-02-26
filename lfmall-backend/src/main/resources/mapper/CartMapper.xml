@@ -28,11 +28,12 @@
 		      	, po.product_size      AS "optionSize"
 		      	, po.product_quantity  AS "optionQuantity"
 
-	      FROM 	"cart" c
-	      JOIN 	"product_option_tb" po
-	        ON 	c.stock_id = po.product_option_id
-	      JOIN 	"product_tb" p
-	        ON 	po.product_uid = p.product_uid
+	     FROM   "cart" c
+	      
+FULL OUTER JOIN "product_tb" p
+		    ON 	c.stock_id = p.product_uid
+FULL OUTER JOIN "product_option_tb" po
+		    ON 	p.product_uid = po.product_option_id
 
          WHERE 	c.member_id = #{memberId}
       ORDER BY 	c.cart_created_at DESC
@@ -97,8 +98,8 @@
   <!-- 선택 삭제 -->
   <delete id="deleteCartItems">
     DELETE FROM "cart"
-    WHERE id = #{memberId}
-      AND "Key" IN
+    WHERE member_id = #{memberId}
+      AND cart_id IN
       <foreach collection="cartIds" item="id" open="(" separator="," close=")">
         #{id}
       </foreach>
