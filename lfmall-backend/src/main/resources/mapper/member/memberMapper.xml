@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lfmall.backend.member.mapper.MemberMapper">
+
+	<select id="checkUserLogin" parameterType="map" resultType="Map">	
+		SELECT *
+		FROM  triplej.MEMBER
+		WHERE member_login_id = #{member_login_id}
+	</select>
+	
+	<insert id="insertProfile" parameterType="map">
+	 	INSERT INTO triplej.member (
+		    member_login_id, 
+		    member_email, 
+		    member_password, 
+		    member_name, 
+		    member_phone, 
+		    member_birth, 
+		    member_address, 
+		    member_address_detail, 
+		    member_address_number, 
+		    member_role
+			) 
+		VALUES 
+			( #{member_login_id}
+			, #{member_email}
+			, #{member_password}
+			, #{member_name}
+			, #{member_phone}
+			, '111111'
+			, #{member_address}
+			, #{member_address_detail}
+			, #{member_address_number}
+			, 'USER'
+			)
+	</insert>
+
+</mapper>
