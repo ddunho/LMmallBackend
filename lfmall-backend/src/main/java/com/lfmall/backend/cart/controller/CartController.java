@@ -248,10 +248,10 @@ public class CartController {
         		Map<String, Object> sessionMap = (HashMap<String, Object>)attr;
         		
         		Object memberId = sessionMap.get("memberId");
-        		if(memberId != null) {
+        		if(memberId != null && memberId instanceof Long) {
         			
-        			long memberIdLong = ((Integer)memberId).longValue(); // 강제 형변환(int -> long)
-        			return memberIdLong;
+        			
+        			return (Long)memberId; // Object -> Long으로 강제 형변환.
         		}else {
         			throw new IllegalStateException("현재 login중인 memberId 정보가 없음.");
         			
