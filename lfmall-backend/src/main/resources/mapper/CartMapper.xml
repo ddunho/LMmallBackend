@@ -23,11 +23,21 @@
            , po.product_color       AS "optionColor"
            , po.product_size        AS "optionSize"
            , po.product_quantity    AS "optionQuantity"
+           , img.image_path			AS "thumbnailImg"
         FROM "cart" c
    FULL OUTER JOIN "product_tb" p
           ON c.stock_id = p.product_uid
    FULL OUTER JOIN "product_option_tb" po
           ON p.product_uid = po.product_option_id
+   		 LEFT JOIN 	(
+				    	SELECT 		DISTINCT ON (product_uid)
+				           			product_uid,
+				           			image_path
+				    	FROM 		product_image_tb
+				    	WHERE 		image_path ILIKE '%.avif'
+				    	ORDER BY 	product_uid, product_img_id
+					) img 
+							ON p.product_uid=img.product_uid
        WHERE c.member_id = #{memberId}
     ORDER BY c.cart_created_at DESC
   </select>
