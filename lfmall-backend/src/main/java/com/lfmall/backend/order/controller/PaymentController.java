@@ -1,5 +1,5 @@
 package com.lfmall.backend.order.controller;
 
-public class OrderController {
+public class PaymentController {
 
 }
