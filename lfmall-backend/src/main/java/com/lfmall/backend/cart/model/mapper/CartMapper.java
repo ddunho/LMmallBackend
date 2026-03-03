@@ -11,6 +11,8 @@ import com.lfmall.backend.cart.model.dto.CartDto;
 public interface CartMapper {
 
     List<Map<String, Object>> selectCartsByMemberId(@Param("memberId") Long memberId);
+    
+    int selectCartCountByMemberId(@Param("memberId") Long memberId);
 
     Integer selectCartQuantity(@Param("memberId") Long memberId,
                               @Param("stockId") Long stockId);

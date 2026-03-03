@@ -17,6 +17,11 @@ public class CartServiceImpl implements CartService {
     public List<Map<String, Object>> getCartsByMemberId(Long memberId) {
         return cartMapper.selectCartsByMemberId(memberId);
     }
+    
+    @Override
+    public int getCartCountByMemberId(Long memberId) {
+        return cartMapper.selectCartCountByMemberId(memberId);
+    }
 
     @Override
     @Transactional
