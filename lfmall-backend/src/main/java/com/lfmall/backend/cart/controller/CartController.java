@@ -237,16 +237,32 @@ public class CartController {
     //***********************************************/
     private long getLoginMemberId(HttpSession session) {
 
-        Object attr = session.getAttribute("loginMemberId");
-
+    	
+    	Object attr = session.getAttribute("userLogin"); 
+    	
         if (attr == null) {
             throw new IllegalStateException("로그인이 필요합니다. (세션 없음)");
+        }else {
+        	
+        	if( attr instanceof Map) {
+        		Map<String, Object> sessionMap = (HashMap<String, Object>)attr;
+        		
+        		Object memberId = sessionMap.get("memberId");
+        		if(memberId != null) {
+        			
+        			long memberIdLong = ((Integer)memberId).longValue(); // 강제 형변환(int -> long)
+        			return memberIdLong;
+        		}else {
+        			throw new IllegalStateException("현재 login중인 memberId 정보가 없음.");
+        			
+        		}
+        		
+        	}else {
+        		throw new ClassCastException("session의 userLogin  타입이 Map이 아닙니다.");
+        	}
         }
 
-        if (!(attr instanceof Long)) {
-            throw new ClassCastException("loginMemberId 타입이 Long이 아닙니다.");
-        }
 
-        return (Long) attr;
+        //return;
     }
 }
