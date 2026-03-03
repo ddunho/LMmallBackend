@@ -38,7 +38,14 @@ public class MemberServiceImpl implements MemberService{
 		
 		Map<String, Object> sessionData = new HashMap<>();
 	    sessionData.put("nickname", sessionUserLogin.get("member_name")); // 프론트 member?.nickname과 매칭
-	    sessionData.put("memberId", sessionUserLogin.get("member_id"));
+//	    sessionData.put("memberId", sessionUserLogin.get("member_id"));
+	    
+	    Object rawId = sessionUserLogin.get("member_id");
+	    if (rawId instanceof Number) {
+	        sessionData.put("memberId", ((Number) rawId).longValue()); // Long으로 변환
+	    } else {
+	        sessionData.put("memberId", rawId); 
+	    }
 		
 		return sessionData;
 	}
