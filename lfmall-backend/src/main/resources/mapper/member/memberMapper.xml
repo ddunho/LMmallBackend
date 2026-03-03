@@ -16,9 +16,6 @@
 		    member_name, 
 		    member_phone, 
 		    member_birth, 
-		    member_address, 
-		    member_address_detail, 
-		    member_address_number, 
 		    member_role
 			) 
 		VALUES 
@@ -28,9 +25,6 @@
 			, #{member_name}
 			, #{member_phone}
 			, '111111'
-			, #{member_address}
-			, #{member_address_detail}
-			, #{member_address_number}
 			, 'USER'
 			)
 	</insert>

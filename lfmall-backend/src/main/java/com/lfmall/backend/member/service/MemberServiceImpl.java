@@ -60,9 +60,6 @@ public class MemberServiceImpl implements MemberService{
 	    convertedMap.put("member_name", memberMap.get("name"));
 	    convertedMap.put("member_phone", memberMap.get("phone"));
 	    convertedMap.put("member_birth", memberMap.get("birth"));
-	    convertedMap.put("member_address", memberMap.get("address"));
-	    convertedMap.put("member_address_detail", memberMap.get("addressDetail"));
-	    convertedMap.put("member_address_number", memberMap.get("addressNumber"));
 
 	    memberMapper.insertProfile(convertedMap);
 
