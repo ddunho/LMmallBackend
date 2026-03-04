@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lfmall.backend.cart.model.service.CartService;
+import com.lfmall.backend.product.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -21,7 +22,9 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
-
+    
+    @Autowired
+    private ProductService productService;
     @PostMapping("/carts")
     public ResponseEntity<Object> getCartsByMemberId(HttpSession session) {
         Map<String, Object> response = new HashMap<>();

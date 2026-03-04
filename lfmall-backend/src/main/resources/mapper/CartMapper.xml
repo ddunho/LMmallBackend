@@ -41,6 +41,22 @@
        WHERE c.member_id = #{memberId}
     ORDER BY c.cart_created_at DESC
   </select>
+  
+  <select id="selectOptionsByProductIds" parameterType="list" resultType="map">
+	  SELECT po.product_uid AS "productId"
+	       , po.product_option_id AS "optionId"
+	       , DENSE_RANK() OVER (ORDER BY po.product_color) AS "colorId"
+	       , po.product_color AS "colorName"
+	       , po.product_size AS "sizeId"
+	       , po.product_size::text AS "sizeName"
+	       , po.product_quantity AS "stock"
+	  FROM product_option_tb po
+	  WHERE po.product_uid IN
+	  <foreach collection="list" item="productId" open="(" separator="," close=")">
+	    #{productId}
+	  </foreach>
+	  ORDER BY po.product_uid, po.product_option_id
+	</select>
 
   <select id="selectCartCountByMemberId" resultType="int">
       SELECT COUNT(*)
