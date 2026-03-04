@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lfmall.backend.payment.mapper.PaymentMapper">
+	
+	<!-- Toss 결제 승인 정보 저장 -->
+	<insert id="savePaymentInfo" parameterType="map">
+	    INSERT INTO triplej.payment (
+	        order_id,
+	        payment_key,
+	        payment_amount,
+	        payment_status,
+	        payment_approved_at
+	    ) VALUES (
+	        #{order_id},
+	        #{payment_key},
+	        #{payment_amount},
+	        #{payment_status},
+	        #{payment_approved_at}
+	    )
+	</insert>
+	
+	<!-- 주문 정보 저장 -->
+	<insert id="saveOrderInfo" parameterType="map">
+	    INSERT INTO triplej.orders (
+	        member_id,
+	        order_total_amount,
+	        order_status,
+	        order_recipient_name,
+	        order_recipient_phone,
+	        order_zipcode,
+	        order_address,
+	        order_address_detail,
+	        order_delivery_msg,
+	        order_created_at
+	    ) VALUES (
+	        #{member_id},
+	        #{total_amount},
+	        'PAID',
+	        #{orderinfo.recipientName},
+	        #{orderinfo.recipientMobilePhone},
+	        #{orderinfo.recipientZipCode},
+	        #{orderinfo.recipientFixAddress},
+	        #{orderinfo.recipientDetailAddress},
+	        #{orderinfo.orderMsgOption},
+	        NOW()
+	    )
+	</insert>
+	
+	<!-- 주문 상품 상세 저장 -->
+	<insert id="insertOrderItem" parameterType="map">
+	    INSERT INTO triplej.order_item (
+	        order_id,
+	        product_id,
+	        option_id,
+	        quantity,
+	        price,
+	        discount,
+	        total_price,
+	        purchase_type,
+	        cart_id
+	    ) VALUES (
+	        #{order_id},
+	        #{productId},
+	        #{optionId},
+	        #{quantity},
+	        #{price},
+	        #{discount},
+	        #{totalPrice},
+	        #{purchaseType},
+	        #{cartId}
+	    )
+	</insert>
+	
+	<update id="subtractStock" parameterType="map">
+	    UPDATE triplej.product_option_tb
+	       SET product_quantity = product_quantity - #{quantity}
+	     WHERE product_option_id = #{optionId}
+	       AND product_quantity >= #{quantity}
+	</update>
+	
+
+</mapper>

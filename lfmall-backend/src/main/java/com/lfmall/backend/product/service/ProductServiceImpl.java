@@ -18,6 +18,7 @@ public class ProductServiceImpl implements ProductService {
         this.mapper = mapper;
     }
 
+    // 카테고리/성별 필터로 상품 목록을 조회하고 화면용 정보로 보강
     @Override
     public List<Map<String, Object>> getProductList(Integer categoryId, String gender) {
         List<Map<String, Object>> baseList = mapper.selectProductListByCategory(categoryId, normalizeGender(gender));
@@ -28,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
         return out;
     }
 
+    // 단일 상품의 기본 정보와 상세 이미지를 조회
     @Override
     public Map<String, Object> getProductDetail(Integer productId) {
         Map<String, Object> base = mapper.selectProductBaseById(productId);
@@ -43,11 +45,13 @@ public class ProductServiceImpl implements ProductService {
         return Map.of("product", product, "imgList", imgList);
     }
 
+    // 상품 옵션(색상/사이즈/재고) 목록 조회
     @Override
     public List<Map<String, Object>> getProductOptions(Integer productId) {
         return mapper.selectOptionsByProductId(productId);
     }
 
+    // 여러 상품을 ID 목록으로 일괄 조회 후 화면용 정보로 보강
     @Override
     public List<Map<String, Object>> getProductBatch(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) return Collections.emptyList();
@@ -59,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
         return out;
     }
 
+    // 검색 조건을 해석해 상품을 조회하고 응답 포맷으로 변환
     @Override
     public Map<String, Object> searchProducts(Map<String, Object> req) {
         String searchtxt = asString(req.get("searchtxt"));
@@ -84,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
+    // 조회된 상품 기본 데이터에 이미지/옵션 등 부가 정보를 결합
     private Map<String, Object> enrichProduct(Map<String, Object> base) {
         Integer productId = toInt(base.get("product_id"));
 
@@ -98,16 +104,19 @@ public class ProductServiceImpl implements ProductService {
         return out;
     }
 
+    // Object 값을 Integer로 안전하게 변환
     private Integer toInt(Object v) {
         if (v == null) return null;
         if (v instanceof Number) return ((Number) v).intValue();
         return Integer.parseInt(String.valueOf(v));
     }
 
+    // Object 값을 문자열로 변환하고 null은 빈 문자열로 처리
     private String asString(Object v) {
         return v == null ? "" : String.valueOf(v);
     }
 
+    // 입력된 성별 값을 male/female 기준값으로 정규화
     private String normalizeGender(String gender) {
         if (gender == null) return null;
         String g = gender.trim().toLowerCase();
@@ -122,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
+    // Object 값을 문자열 리스트로 변환
     @SuppressWarnings("unchecked")
     private List<String> asStringList(Object v) {
         if (v == null) return Collections.emptyList();
