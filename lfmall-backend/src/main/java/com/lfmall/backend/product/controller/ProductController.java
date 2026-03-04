@@ -17,6 +17,7 @@ public class ProductController {
         this.service = service;
     }
 
+    // 상품 목록 조회 요청 처리
     @PostMapping("/product/list")
     public List<Map<String, Object>> productList(@RequestBody Map<String, Object> body) {
         Integer categoryId = toInt(body.get("category_id"));
@@ -24,18 +25,21 @@ public class ProductController {
         return service.getProductList(categoryId, gender);
     }
 
+    // 상품 상세 정보 조회 요청 처리
     @PostMapping("/product/detail")
     public Map<String, Object> productDetail(@RequestBody Object body) {
         Integer productId = extractId(body);
         return service.getProductDetail(productId);
     }
 
+    // 상품 옵션 목록 조회 요청 처리
     @PostMapping("/product/option")
     public List<Map<String, Object>> productOption(@RequestBody Object body) {
         Integer productId = extractId(body);
         return service.getProductOptions(productId);
     }
 
+    // 여러 상품을 한 번에 조회하는 배치 요청 처리
     @GetMapping("/product/batch")
     public Map<String, Object> productBatch(@RequestParam("ids") String ids) {
         List<Integer> idList = new ArrayList<>();
@@ -48,11 +52,13 @@ public class ProductController {
         return Map.of("success", true, "data", service.getProductBatch(idList));
     }
 
+    // 상품 검색 요청 처리
     @PostMapping("/search/result")
     public Map<String, Object> searchResult(@RequestBody Map<String, Object> req) {
         return service.searchProducts(req);
     }
 
+    // 요청 본문에서 상품 ID를 유연하게 추출
     private Integer extractId(Object body) {
         if (body == null) return null;
         if (body instanceof Number) return ((Number) body).intValue();
@@ -65,6 +71,7 @@ public class ProductController {
         return Integer.parseInt(String.valueOf(body));
     }
 
+    // 다양한 타입의 값을 Integer로 변환
     private Integer toInt(Object v) {
         if (v == null) return null;
         if (v instanceof Number) return ((Number) v).intValue();

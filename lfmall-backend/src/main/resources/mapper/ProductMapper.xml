@@ -5,6 +5,7 @@
 
 <mapper namespace="com.lfmall.backend.product.mapper.ProductMapper">
 
+  <!-- 카테고리/성별 조건으로 상품 목록을 조회 -->
   <select id="selectProductListByCategory" resultType="map">
 	  SELECT p.product_uid AS product_id
 		   , p.product_name AS name
@@ -33,6 +34,7 @@
 	   ORDER BY p.product_created DESC, p.product_uid DESC
   </select>
 
+  <!-- 상품 기본 정보를 단건 조회 -->
   <select id="selectProductBaseById" resultType="map">
 	  SELECT p.product_uid AS product_id
 	       , p.product_name AS name
@@ -45,6 +47,7 @@
 	   WHERE p.product_uid = #{productId}
   </select>
 
+  <!-- 상품 기본 정보를 ID 목록으로 다건 조회 -->
   <select id="selectProductBaseByIds" resultType="map">
 	  SELECT p.product_uid AS product_id
 		   , p.product_name AS name
@@ -61,6 +64,7 @@
 	   ORDER BY p.product_uid DESC
   </select>
 
+  <!-- 상품 대표 이미지 파일명 목록 조회 -->
   <select id="selectImageNamesByProductId" resultType="string">
 	  SELECT pi.image_path
 	  FROM product_image_tb pi
@@ -69,6 +73,7 @@
 	  ORDER BY pi.product_img_id
   </select>
 	
+  <!-- 상품 상세 이미지 파일명 목록 조회 -->
   <select id="selectDetailImagesByProductId" resultType="map">
 	  SELECT pi.image_path AS name
 	  FROM product_image_tb pi
@@ -78,6 +83,7 @@
   </select>
 
 
+  <!-- 상품 색상 목록 조회 -->
   <select id="selectColorsByProductId" resultType="string">
 	  SELECT DISTINCT po.product_color
 	  FROM product_option_tb po
@@ -85,6 +91,7 @@
 	  ORDER BY po.product_color
   </select>
 
+  <!-- 상품 사이즈 목록 조회 -->
   <select id="selectSizesByProductId" resultType="string">
 	  SELECT po.product_size::text
 	  FROM product_option_tb po
@@ -94,6 +101,7 @@
   </select>
 
 
+  <!-- 상품 옵션/재고 상태 목록 조회 -->
   <select id="selectOptionsByProductId" resultType="map">
 	  SELECT po.product_option_id AS option_id
 	       , DENSE_RANK() OVER (ORDER BY po.product_color) AS color_id
@@ -108,6 +116,7 @@
 	  ORDER BY po.product_option_id
   </select>
 
+  <!-- 검색 조건과 정렬 조건으로 상품 목록 조회 -->
   <select id="searchProducts" resultType="map">
 	  SELECT DISTINCT p.product_uid AS product_id
 	                , p.product_name AS name
