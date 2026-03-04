@@ -101,6 +101,8 @@
 	       , po.product_size AS size_id
 	       , po.product_size::text AS size_name
 	       , po.product_quantity AS stock
+	       , CASE WHEN po.product_quantity &lt;= 0 THEN true ELSE false END AS sold_out
+	       , CASE WHEN po.product_quantity BETWEEN 1 AND 5 THEN true ELSE false END AS low_stock
 	  FROM product_option_tb po
 	  WHERE po.product_uid = #{productId}
 	  ORDER BY po.product_option_id
