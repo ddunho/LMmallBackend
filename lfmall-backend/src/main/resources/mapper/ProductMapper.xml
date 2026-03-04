@@ -6,62 +6,59 @@
 <mapper namespace="com.lfmall.backend.product.mapper.ProductMapper">
 
   <select id="selectProductListByCategory" resultType="map">
-	  SELECT
-	    p.product_uid AS product_id,
-	    p.product_name AS name,
-	    p.product_price AS price,
-	    COALESCE(p.product_discount, 0) AS discount,
-	    p.category_id AS category_id,
-	    p.category_id AS parent_category_id,
-	    p.product_created AS product_created
-	  FROM product_tb p
-	  WHERE (#{categoryId} = 0 OR p.category_id = #{categoryId})
-      <if test="gender != null and gender != ''">
-        AND (
-          <choose>
-            <when test="gender == 'male'">
-              LOWER(TRIM(COALESCE(p.gender, ''))) IN ('m', 'male', 'men', '남성', '남자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
-            </when>
-            <when test="gender == 'female'">
-              LOWER(TRIM(COALESCE(p.gender, ''))) IN ('f', 'female', 'women', '여성', '여자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
-            </when>
-            <otherwise>
-              1 = 1
-            </otherwise>
-          </choose>
-        )
-      </if>
-	  ORDER BY p.product_created DESC, p.product_uid DESC
+	  SELECT p.product_uid AS product_id
+		   , p.product_name AS name
+		   , p.product_price AS price
+		   , COALESCE(p.product_discount, 0) AS discount
+		   , p.category_id AS category_id
+		   , p.category_id AS parent_category_id
+		   , p.product_created AS product_created
+		FROM product_tb p
+	   WHERE (#{categoryId} = 0 OR p.category_id = #{categoryId})
+		   <if test="gender != null and gender != ''">
+			   AND (
+				   <choose>
+					   <when test="gender == 'male'">
+					   LOWER(TRIM(COALESCE(p.gender, ''))) IN ('m', 'male', 'men', '남성', '남자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
+					   </when>
+					   <when test="gender == 'female'">
+					   LOWER(TRIM(COALESCE(p.gender, ''))) IN ('f', 'female', 'women', '여성', '여자', 'u', 'unisex', '공용', '남녀공용', '남여공용')
+					   </when>
+					   <otherwise>
+					   1 = 1
+					   </otherwise>
+				   </choose>
+			   )
+		   </if>
+	   ORDER BY p.product_created DESC, p.product_uid DESC
   </select>
 
   <select id="selectProductBaseById" resultType="map">
-    SELECT
-      p.product_uid AS product_id,
-      p.product_name AS name,
-      p.product_price AS price,
-      COALESCE(p.product_discount, 0) AS discount,
-      p.category_id AS category_id,
-      p.category_id AS parent_category_id,
-      p.product_created AS product_created
-    FROM product_tb p
-    WHERE p.product_uid = #{productId}
+	  SELECT p.product_uid AS product_id
+	       , p.product_name AS name
+	       , p.product_price AS price
+	       , COALESCE(p.product_discount, 0) AS discount
+	       , p.category_id AS category_id
+	       , p.category_id AS parent_category_id
+	       , p.product_created AS product_created
+	    FROM product_tb p
+	   WHERE p.product_uid = #{productId}
   </select>
 
   <select id="selectProductBaseByIds" resultType="map">
-    SELECT
-      p.product_uid AS product_id,
-      p.product_name AS name,
-      p.product_price AS price,
-      COALESCE(p.product_discount, 0) AS discount,
-      p.category_id AS category_id,
-      p.category_id AS parent_category_id,
-      p.product_created AS product_created
-    FROM product_tb p
-    WHERE p.product_uid IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-    ORDER BY p.product_uid DESC
+	  SELECT p.product_uid AS product_id
+		   , p.product_name AS name
+		   , p.product_price AS price
+		   , COALESCE(p.product_discount, 0) AS discount
+		   , p.category_id AS category_id
+		   , p.category_id AS parent_category_id
+		   , p.product_created AS product_created
+		FROM product_tb p
+	   WHERE p.product_uid IN
+	   <foreach collection="ids" item="id" open="(" separator="," close=")">
+       	#{id}
+	   </foreach>
+	   ORDER BY p.product_uid DESC
   </select>
 
   <select id="selectImageNamesByProductId" resultType="string">
@@ -82,10 +79,10 @@
 
 
   <select id="selectColorsByProductId" resultType="string">
-    SELECT DISTINCT po.product_color
-    FROM product_option_tb po
-    WHERE po.product_uid = #{productId}
-    ORDER BY po.product_color
+	  SELECT DISTINCT po.product_color
+	  FROM product_option_tb po
+	  WHERE po.product_uid = #{productId}
+	  ORDER BY po.product_color
   </select>
 
   <select id="selectSizesByProductId" resultType="string">
@@ -98,85 +95,76 @@
 
 
   <select id="selectOptionsByProductId" resultType="map">
-    SELECT
-      po.product_option_id AS option_id,
-      DENSE_RANK() OVER (ORDER BY po.product_color) AS color_id,
-      po.product_color AS color_name,
-      po.product_size AS size_id,
-      po.product_size::text AS size_name,
-      po.product_quantity AS stock
-    FROM product_option_tb po
-    WHERE po.product_uid = #{productId}
-    ORDER BY po.product_option_id
+	  SELECT po.product_option_id AS option_id
+	       , DENSE_RANK() OVER (ORDER BY po.product_color) AS color_id
+	       , po.product_color AS color_name
+	       , po.product_size AS size_id
+	       , po.product_size::text AS size_name
+	       , po.product_quantity AS stock
+	  FROM product_option_tb po
+	  WHERE po.product_uid = #{productId}
+	  ORDER BY po.product_option_id
   </select>
 
   <select id="searchProducts" resultType="map">
-    SELECT DISTINCT
-      p.product_uid AS product_id,
-      p.product_name AS name,
-      p.product_price AS price,
-      COALESCE(p.product_discount, 0) AS discount,
-      p.category_id AS category_id,
-      p.category_id AS parent_category_id,
-      p.product_created AS product_created
-    FROM product_tb p
-    WHERE 1=1
-      <if test="searchtxt != null and searchtxt != ''">
-        AND p.product_name ILIKE CONCAT('%', #{searchtxt}, '%')
-      </if>
-
-      <if test="addSearch != null and addSearch.size() > 0">
-        <foreach collection="addSearch" item="kw">
-          AND p.product_name ILIKE CONCAT('%', #{kw}, '%')
-        </foreach>
-      </if>
-
-      <if test="color != null and color.size() > 0">
-        AND EXISTS (
-          SELECT 1
-          FROM product_option_tb po
-          WHERE po.product_uid = p.product_uid
-            AND po.product_color IN
-            <foreach collection="color" item="c" open="(" separator="," close=")">
-              #{c}
-            </foreach>
-        )
-      </if>
-
-      <if test="size != null and size.size() > 0">
-        AND EXISTS (
-          SELECT 1
-          FROM product_option_tb po
-          WHERE po.product_uid = p.product_uid
-            AND po.product_size::text IN
-            <foreach collection="size" item="s" open="(" separator="," close=")">
-              #{s}
-            </foreach>
-        )
-      </if>
-
-      <if test="brandName != null and brandName.size() > 0">
-        AND 'LFmall' IN
-        <foreach collection="brandName" item="b" open="(" separator="," close=")">
-          #{b}
-        </foreach>
-      </if>
-
-    <choose>
-      <when test="searchtype == 'price_low'">
-        ORDER BY p.product_price ASC, p.product_uid DESC
-      </when>
-      <when test="searchtype == 'price_high'">
-        ORDER BY p.product_price DESC, p.product_uid DESC
-      </when>
-      <when test="searchtype == 'sale_high'">
-		ORDER BY discount DESC, p.product_uid DESC
-	  </when>
-
-      <otherwise>
-        ORDER BY p.product_created DESC, p.product_uid DESC
-      </otherwise>
-    </choose>
-  </select>
-
+	  SELECT DISTINCT p.product_uid AS product_id
+	                , p.product_name AS name
+	                , p.product_price AS price
+	                , COALESCE(p.product_discount, 0) AS discount
+	                , p.category_id AS category_id
+	                , p.category_id AS parent_category_id
+	                , p.product_created AS product_created
+	  FROM product_tb p
+	  WHERE 1=1
+	  <if test="searchtxt != null and searchtxt != ''">
+	  	AND p.product_name ILIKE CONCAT('%', #{searchtxt}, '%')
+	  </if>
+	  <if test="addSearch != null and addSearch.size() > 0">
+		  <foreach collection="addSearch" item="kw">
+		  	AND p.product_name ILIKE CONCAT('%', #{kw}, '%')
+		  </foreach>
+	  </if>
+	  <if test="color != null and color.size() > 0">
+			  AND EXISTS (
+			  SELECT 1
+			  FROM product_option_tb po
+			  WHERE po.product_uid = p.product_uid
+			  AND po.product_color IN
+			  <foreach collection="color" item="c" open="(" separator="," close=")">
+			  	#{c}
+			  </foreach>
+		  )
+	  </if>
+	  <if test="size != null and size.size() > 0">
+		  AND EXISTS (
+		  SELECT 1
+		  FROM product_option_tb po
+		  WHERE po.product_uid = p.product_uid
+		  AND po.product_size::text IN
+		  <foreach collection="size" item="s" open="(" separator="," close=")">
+		  	#{s}
+		  </foreach>
+		  )
+	  </if>
+	  <if test="brandName != null and brandName.size() > 0">
+		  AND 'LFmall' IN
+		  <foreach collection="brandName" item="b" open="(" separator="," close=")">
+		  	#{b}
+		  </foreach>
+	  </if>
+	  <choose>
+		  <when test="searchtype == 'price_low'">
+		  	ORDER BY p.product_price ASC, p.product_uid DESC
+		  </when>
+		  <when test="searchtype == 'price_high'">
+		  	ORDER BY p.product_price DESC, p.product_uid DESC
+		  </when>
+		  <when test="searchtype == 'sale_high'">
+		  	ORDER BY discount DESC, p.product_uid DESC
+		  </when>
+		  <otherwise>
+		  	ORDER BY p.product_created DESC, p.product_uid DESC
+		  </otherwise>
+	  </choose>
+	  </select>
 </mapper>
