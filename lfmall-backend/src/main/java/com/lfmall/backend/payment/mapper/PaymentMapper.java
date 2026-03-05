@@ -13,4 +13,6 @@ public interface PaymentMapper {
 	public void saveOrderInfo(Map<String, Object> orderData);
 
 	public void savePaymentInfo(Map<String, Object> paymentData);
+
+	public void deletePaidCartItems(Map<String, Object> data);
 }
