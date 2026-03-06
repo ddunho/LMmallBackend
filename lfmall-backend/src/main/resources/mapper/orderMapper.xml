@@ -73,6 +73,7 @@
 	    )
 	</insert>
 	
+	<!-- 주문 상품 재고 감소 -->
 	<update id="subtractStock" parameterType="map">
 	    UPDATE triplej.product_option_tb
 	       SET product_quantity = product_quantity - #{quantity}
@@ -80,6 +81,7 @@
 	       AND product_quantity >= #{quantity}
 	</update>
 
+	<!-- 장바구니 비우기 -->
 	<delete id="deletePaidCartItems" parameterType="map">
 	    DELETE FROM "cart"
 	     WHERE member_id = #{member_id}
