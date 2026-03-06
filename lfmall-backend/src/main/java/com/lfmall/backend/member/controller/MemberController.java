@@ -5,18 +5,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lfmall.backend.member.service.MemberService;
-import com.lfmall.backend.member.service.MemberServiceImpl;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @RequestMapping("/api")
 @RestController //리액트에서 json응답용
@@ -27,7 +21,7 @@ public class MemberController {
 	
 	//로그인
 	@PostMapping("/member/login")
-	public ResponseEntity<?> login(@RequestBody Map<String, String> memberMap,  HttpSession session) {
+	public ResponseEntity<?> login(@RequestBody Map<String, String> memberMap) {
 		
 		
 
@@ -50,7 +44,6 @@ public class MemberController {
 		// 정상적으로 로그인 했을경우 비밀번호 비교를 통해서 true 반환되었을경우에 session 데이터 담기
 		if(result.get("loginCheck") == true ) {
 			Map<String, Object> sessionMap = memberservice.saveSession(convertedMap);
-			session.setAttribute("userLogin", sessionMap);
 			
 			return ResponseEntity.ok(Map.of(
 		            "success", true,
@@ -60,19 +53,6 @@ public class MemberController {
 		}else {
 			return ResponseEntity.status(401).body(Map.of("loginCheck", false));
 		}
-	}
-	
-	//로그아웃
-	@PostMapping("/member/logout")
-	public ResponseEntity<Void> logoutSession(HttpServletRequest request){
-		HttpSession session = request.getSession(false); // 세션이 존재하지 않을 경우, null 반환(새로 생성 x)
-		
-		if(session != null) {
-			session.invalidate();//세션 존재할 경우 세션 삭제
-		}
-		
-		return ResponseEntity.ok().build();
-		
 	}
 	
 	

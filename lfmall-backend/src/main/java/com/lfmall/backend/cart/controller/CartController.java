@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lfmall.backend.cart.model.service.CartService;
 import com.lfmall.backend.product.service.ProductService;
 
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -26,10 +25,12 @@ public class CartController {
     @Autowired
     private ProductService productService;
     @PostMapping("/carts")
-    public ResponseEntity<Object> getCartsByMemberId(HttpSession session) {
+    public ResponseEntity<Object> getCartsByMemberId(
+    		@RequestBody Map<String, Object> memberData /*HttpSession session*/) { //수정(쿠키): 쿠키를 통해 memberId 전송
         Map<String, Object> response = new HashMap<>();
         try {
-            Long memberId = getLoginMemberId(session);
+//            Long memberId = getLoginMemberId(session);
+        	Long memberId = ((Number) memberData.get("memberId")).longValue(); // 수정(쿠키): 프론트에서 memberId 가져옴
             List<Map<String, Object>> cartList = cartService.getCartsByMemberId(memberId);
             response.put("success", true);
             response.put("data", cartList);
@@ -51,10 +52,12 @@ public class CartController {
     }
 
     @PostMapping("/count")
-    public ResponseEntity<Object> getCartCount(HttpSession session) {
+	public ResponseEntity<Object> getCartCount(
+			@RequestBody Map<String, Object> memberData /* HttpSession session */) { //수정(쿠키)
         Map<String, Object> response = new HashMap<>();
-        try {
-            Long memberId = getLoginMemberId(session);
+        try {     	
+//            Long memberId = getLoginMemberId(session);
+        	Long memberId = ((Number) memberData.get("memberId")).longValue(); // 수정(쿠키): 프론트에서 memberId 가져옴
             int count = cartService.getCartCountByMemberId(memberId);
             response.put("success", true);
             response.put("count", count);
@@ -76,11 +79,16 @@ public class CartController {
     }
 
     @PostMapping("/addcart")
-    public ResponseEntity<Object> addCart(@RequestBody List<Map<String, Object>> selectedOption, HttpSession session) {
+    public ResponseEntity<Object> addCart(@RequestBody Map<String, Object> body/* HttpSession session */) {
+    	//수정(쿠키): body기능-프론트에서 보낸 selectedOption과 member 쿠키 데이터 전부 가져옴
         Map<String, Object> response = new HashMap<>();
         try {
+        	Long memberId = toLong(body.get("memberId")); //수정(쿠키): 프론트의 멤버아이디 받아옴
+            List<Map<String, Object>> selectedOption = 
+                (List<Map<String, Object>>) body.get("selectedOption");
+            
             for (Map<String, Object> item : selectedOption) {
-                Long memberId = getLoginMemberId(session);
+//              Long memberId = getLoginMemberId(session);
                 Long stockId = toLong(item.get("productId"));
                 Integer qty = toInt(item.get("quantity"));
                 cartService.addCart(memberId, stockId, qty);
@@ -103,7 +111,7 @@ public class CartController {
     }
 
     @PostMapping("/chquantity")
-    public ResponseEntity<Object> changeQuantity(@RequestBody Map<String, Object> body, HttpSession session) {
+    public ResponseEntity<Object> changeQuantity(@RequestBody Map<String, Object> body /* HttpSession session */) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
@@ -128,7 +136,7 @@ public class CartController {
     }
 
     @PostMapping("/update-option")
-    public ResponseEntity<Object> updateOption(@RequestBody Map<String, Object> body, HttpSession session) {
+    public ResponseEntity<Object> updateOption(@RequestBody Map<String, Object> body /* HttpSession session */) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
@@ -155,11 +163,12 @@ public class CartController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Object> deleteCarts(@RequestBody Map<String, Object> body, HttpSession session) {
+    public ResponseEntity<Object> deleteCarts(@RequestBody Map<String, Object> body/* HttpSession session */) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long memberId = getLoginMemberId(session);
-
+//          Long memberId = getLoginMemberId(session);
+        	Long memberId = ((Number) body.get("memberId")).longValue(); //수정(쿠키): body에서 멤버아이디 받아오기
+        	
             List<Object> rawIds = (List<Object>) body.get("cart_ids");
             List<Long> cartIds = rawIds.stream().map(x -> Long.valueOf(x.toString())).toList();
 
@@ -193,21 +202,21 @@ public class CartController {
         return Integer.valueOf(v.toString());
     }
 
-    private long getLoginMemberId(HttpSession session) {
-        Object attr = session.getAttribute("userLogin");
-        if (attr == null) {
-            throw new IllegalStateException("로그인이 필요합니다. (세션 없음)");
-        }
-
-        if (!(attr instanceof Map<?, ?> sessionMap)) {
-            throw new ClassCastException("session userLogin 타입이 Map이 아닙니다.");
-        }
-
-        Object memberId = sessionMap.get("memberId");
-        if (memberId instanceof Long id) {
-            return id;
-        }
-
-        throw new IllegalStateException("현재 login 중인 memberId 정보가 없습니다.");
-    }
+//    private long getLoginMemberId(HttpSession session) {
+//        Object attr = session.getAttribute("userLogin");
+//        if (attr == null) {
+//            throw new IllegalStateException("로그인이 필요합니다. (세션 없음)");
+//        }
+//
+//        if (!(attr instanceof Map<?, ?> sessionMap)) {
+//            throw new ClassCastException("session userLogin 타입이 Map이 아닙니다.");
+//        }
+//
+//        Object memberId = sessionMap.get("memberId");
+//        if (memberId instanceof Long id) {
+//            return id;
+//        }
+//
+//        throw new IllegalStateException("현재 login 중인 memberId 정보가 없습니다.");
+//    }
 }
