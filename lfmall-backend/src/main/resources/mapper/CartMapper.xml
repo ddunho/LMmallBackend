@@ -13,13 +13,13 @@
            , c.stock_id             AS "stockId"
            , c.cart_quantity        AS "cartQuantity"
            , c.cart_created_at      AS "cartCreatedAt"
+           , c.option_id 			AS "optionId"
            , p.product_uid          AS "productId"
            , p.product_name         AS "productName"
            , p.product_price        AS "productPrice"
            , p.product_discount     AS "productDiscount"
            , p.gender               AS "gender"
            , p.category_id          AS "categoryId"
-           , po.product_option_id   AS "optionId"
            , po.product_color       AS "optionColor"
            , po.product_size        AS "optionSize"
            , po.product_quantity    AS "optionQuantity"
@@ -28,7 +28,7 @@
    FULL OUTER JOIN "product_tb" p
           			ON 	c.stock_id = p.product_uid
    FULL OUTER JOIN "product_option_tb" po
-          			ON 	p.product_uid = po.product_option_id
+          			ON 	c.option_id = po.product_option_id
    		 LEFT JOIN 	(
 				    	SELECT 		DISTINCT ON (product_uid)
 				           			product_uid,
@@ -81,8 +81,8 @@
   </select>
 
   <insert id="insertCart">
-    INSERT INTO "cart" (member_id, stock_id, cart_quantity, cart_created_at)
-         VALUES (#{memberId}, #{stockId}, #{quantity}, NOW())
+    INSERT INTO "cart" (member_id, stock_id, cart_quantity, cart_created_at, option_id)
+         VALUES (#{memberId}, #{stockId}, #{quantity}, NOW(), #{optionId})
   </insert>
 
   <update id="updateCartQuantityById">
@@ -96,11 +96,19 @@
        SET cart_quantity = #{quantity}
      WHERE member_id = #{memberId}
        AND stock_id = #{stockId}
+       AND option_id=#{optionId}
   </update>
 
   <update id="updateCartStockAndQuantity">
     UPDATE "cart"
        SET stock_id = #{newStockId},
+           cart_quantity = #{quantity}
+     WHERE cart_id = #{cartId}
+       AND member_id = #{memberId}
+  </update>
+  <update id="updateOption">
+  	UPDATE "cart"
+       SET option_id = #{optionId},
            cart_quantity = #{quantity}
      WHERE cart_id = #{cartId}
        AND member_id = #{memberId}

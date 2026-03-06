@@ -1,5 +1,6 @@
 package com.lfmall.backend.cart.controller;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.lfmall.backend.product.service.ProductService;
 
 @RestController
 @RequestMapping("/api/cart")
+
 public class CartController {
 
     @Autowired
@@ -90,8 +92,10 @@ public class CartController {
             for (Map<String, Object> item : selectedOption) {
 //              Long memberId = getLoginMemberId(session);
                 Long stockId = toLong(item.get("productId"));
+                Long optionId = toLong(item.get("option_id"));
+                //System.out.println("option_id : " + optionId);
                 Integer qty = toInt(item.get("quantity"));
-                cartService.addCart(memberId, stockId, qty);
+                cartService.addCart(memberId, stockId, optionId, qty);
             }
             response.put("success", true);
         } catch (ClassCastException e) {
@@ -140,11 +144,13 @@ public class CartController {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
-            Long memberId = Long.valueOf(body.get("member_id").toString());
-            Long newStockId = Long.valueOf(body.get("stock_id").toString());
+            //Long memberId = Long.valueOf(body.get("member_id").toString());
+            Long memberId = getLoginMemberId(session);
+            Long optionId = Long.valueOf(body.get("option_id").toString());
             Integer quantity = Integer.valueOf(body.get("quantity").toString());
 
-            cartService.updateStock(cartId, newStockId, quantity, memberId);
+            //cartService.updateStock(cartId, newStockId, quantity, memberId);
+            cartService.updateOptionByCartAndMember(cartId, memberId, quantity, optionId);
             response.put("success", true);
         } catch (ClassCastException e) {
             e.printStackTrace();

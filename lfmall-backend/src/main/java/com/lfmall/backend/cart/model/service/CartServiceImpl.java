@@ -48,7 +48,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void addCart(Long memberId, Long stockId, Integer quantity) {
+    public void addCart(Long memberId, Long stockId, Long optionId, Integer quantity) {
         if (quantity == null || quantity < 1) {
             throw new IllegalArgumentException("quantity는 1 이상이어야 합니다.");
         }
@@ -56,11 +56,11 @@ public class CartServiceImpl implements CartService {
         Integer existQty = cartMapper.selectCartQuantity(memberId, stockId);
 
         if (existQty == null) {
-            cartMapper.insertCart(memberId, stockId, quantity);
+            cartMapper.insertCart(memberId, stockId,optionId, quantity);
         } else {
             // 같은 stock_id가 이미 담겨있으면 수량 누적
             int newQty = existQty + quantity;
-            cartMapper.updateCartQuantityByMemberAndStock(memberId, stockId, newQty);
+            cartMapper.updateCartQuantityByMemberAndStock(memberId, stockId, optionId,newQty);
         }
     }
 
@@ -92,6 +92,21 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+	@Override
+	public void updateOptionByCartAndMember(Long cartId, Long memberId, Integer quantity, Long optionId) {
+		// TODO Auto-generated method stub
+        if (quantity == null || quantity < 1) {
+            throw new IllegalArgumentException("quantity는 1 이상이어야 합니다.");
+        }
+
+        // (선택) 같은 newStockId가 이미 장바구니에 있으면 merge 처리하는 게 더 좋음
+        // 지금은 단순 변경만.
+
+        int updated = cartMapper.updateOption(cartId, memberId, quantity, optionId);
+        if (updated == 0) {
+            throw new IllegalStateException("옵션 변경 실패: cart_id가 없거나 member 불일치");
+        }
+	}
     @Override
     @Transactional
     public void deleteCarts(List<Long> cartIds, Long memberId) {
@@ -156,4 +171,6 @@ public class CartServiceImpl implements CartService {
             cart.put("otherOptions", otherOptions);
         }
     }
+
+
 }

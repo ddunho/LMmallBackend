@@ -12,12 +12,13 @@ public interface CartService {
     int getCartCountByMemberId(Long memberId);
 
     // addCart??理쒖냼 member_id, stock_id, cart_quantity ?꾩슂
-    void addCart(Long memberId, Long stockId, Integer quantity);
+    void addCart(Long memberId, Long stockId,Long optionId, Integer quantity);
 
     void changeQuantity(Long cartId, Integer quantity);
 
     // ?듭뀡 蹂寃?= stock_id 蹂寃?
     void updateStock(Long cartId, Long newStockId, Integer quantity, Long memberId);
+    void updateOptionByCartAndMember(Long cartId, Long newStockId, Integer quantity, Long memberId);
 
     void deleteCarts(List<Long> cartIds, Long memberId);
 }
