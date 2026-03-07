@@ -144,8 +144,8 @@ public class CartController {
         Map<String, Object> response = new HashMap<>();
         try {
             Long cartId = Long.valueOf(body.get("cart_id").toString());
-            //Long memberId = Long.valueOf(body.get("member_id").toString());
-            Long memberId = getLoginMemberId(session);
+            Long memberId = Long.valueOf(body.get("member_id").toString());
+            //Long memberId = getLoginMemberId(session);
             Long optionId = Long.valueOf(body.get("option_id").toString());
             Integer quantity = Integer.valueOf(body.get("quantity").toString());
 
