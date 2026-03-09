@@ -69,6 +69,7 @@
         FROM "cart" c
        WHERE c.member_id = #{memberId}
          AND c.stock_id = #{stockId}
+         AND c.option_id = #{optionId}
        LIMIT 1
   </select>
 
@@ -77,6 +78,7 @@
         FROM "cart" c
        WHERE c.member_id = #{memberId}
          AND c.stock_id = #{stockId}
+
        LIMIT 1
   </select>
 

@@ -53,7 +53,7 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("quantity는 1 이상이어야 합니다.");
         }
 
-        Integer existQty = cartMapper.selectCartQuantity(memberId, stockId);
+        Integer existQty = cartMapper.selectCartQuantity(memberId, stockId, optionId);
 
         if (existQty == null) {
             cartMapper.insertCart(memberId, stockId,optionId, quantity);

@@ -14,11 +14,13 @@ public interface CartMapper {
     
     int selectCartCountByMemberId(@Param("memberId") Long memberId);
     List<Map<String, Object>> selectOptionsByProductIds(List<Integer> productIds);
-    Integer selectCartQuantity(@Param("memberId") Long memberId,
-                              @Param("stockId") Long stockId);
+    Integer selectCartQuantity(@Param("memberId") Long memberId
+                              , @Param("stockId") Long stockId
+                              , @Param("optionId") Long optionId);
 
-    Long selectCartIdByMemberAndStock(@Param("memberId") Long memberId,
-                                      @Param("stockId") Long stockId);
+    Long selectCartIdByMemberAndStock(@Param("memberId") Long memberId
+                                      , @Param("stockId") Long stockId
+                                      );
 
     int insertCart(@Param("memberId") Long memberId,
                    @Param("stockId") Long stockId,
